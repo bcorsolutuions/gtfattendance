@@ -27,6 +27,7 @@ export async function getMembers() {
 }
 
 export async function saveMember(member: Record<string, unknown>) {
+  console.log('saveMember payload Photo length:', String(member.Photo ?? '').length);
   return callAPI('saveMember', { member });
 }
 

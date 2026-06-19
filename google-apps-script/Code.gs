@@ -10,7 +10,7 @@ var SHEETS = {
 };
 
 var HEADERS = {
-  Members:    ['MemberID', 'FullName', 'Mobile', 'Area', 'Status', 'Remarks', 'CreatedAt'],
+  Members:    ['MemberID', 'FullName', 'Mobile', 'Area', 'Status', 'Remarks', 'Photo', 'CreatedAt'],
   Meetings:   ['MeetingID', 'MeetingDate', 'Title', 'Venue', 'Notes', 'CreatedAt'],
   Attendance: ['AttendanceID', 'MeetingID', 'MemberID', 'Status', 'Remarks', 'MarkedOn']
 };
@@ -79,7 +79,10 @@ function doGet(e) {
 
 function doPost(e) {
   try {
+    Logger.log('RAW body length: ' + e.postData.contents.length);
     var body = JSON.parse(e.postData.contents);
+    Logger.log('action: ' + body.action);
+    if (body.member) Logger.log('Photo length in doPost: ' + (body.member.Photo ? body.member.Photo.length : 'MISSING'));
     var action = body.action;
 
     if (action === 'saveMember')         return saveMember(body.member);
@@ -100,7 +103,14 @@ function doPost(e) {
 
 function saveMember(m) {
   var sheet = getSheet(SHEETS.Members);
-  sheet.appendRow([m.MemberID, m.FullName, m.Mobile, m.Area, m.Status, m.Remarks, m.CreatedAt]);
+  // Save row without photo first (appendRow works reliably for normal data)
+  sheet.appendRow([m.MemberID, m.FullName, m.Mobile, m.Area, m.Status, m.Remarks, '', m.CreatedAt]);
+  // Write photo separately using setValue to avoid appendRow issues with long strings
+  if (m.Photo && m.Photo.length > 10) {
+    var lastRow = sheet.getLastRow();
+    sheet.getRange(lastRow, 7).setValue(m.Photo);
+    SpreadsheetApp.flush();
+  }
   return response({ success: true, MemberID: m.MemberID });
 }
 
@@ -109,9 +119,17 @@ function updateMember(m) {
   var data = sheet.getDataRange().getValues();
   for (var i = 1; i < data.length; i++) {
     if (data[i][0] === m.MemberID) {
-      sheet.getRange(i + 1, 1, 1, 7).setValues([[
-        m.MemberID, m.FullName, m.Mobile, m.Area, m.Status, m.Remarks, data[i][6]
+      var createdAt = data[i][7] || data[i][6] || '';
+      var currentPhoto = data[i][6] || '';
+      // Update all fields except photo and createdAt
+      sheet.getRange(i + 1, 1, 1, 6).setValues([[
+        m.MemberID, m.FullName, m.Mobile, m.Area, m.Status, m.Remarks
       ]]);
+      // Update photo only if a new one is provided
+      var newPhoto = (m.Photo && m.Photo.length > 10) ? m.Photo : currentPhoto;
+      sheet.getRange(i + 1, 7).setValue(newPhoto);
+      sheet.getRange(i + 1, 8).setValue(createdAt);
+      SpreadsheetApp.flush();
       return response({ success: true });
     }
   }

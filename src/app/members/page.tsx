@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
-import { Plus, Search, Pencil, Trash2, UserCheck, UserX, Phone, MapPin } from 'lucide-react';
+import { Plus, Search, Pencil, Trash2, UserCheck, UserX, Phone, MapPin, User } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
@@ -115,6 +115,15 @@ export default function MembersPage() {
             <Card key={m.MemberID} className="shadow-sm border">
               <CardContent className="p-4">
                 <div className="flex items-start justify-between gap-2">
+                  {/* Avatar */}
+                  <div className="w-11 h-11 rounded-full bg-muted border shrink-0 overflow-hidden flex items-center justify-center">
+                    {m.Photo && m.Photo.length > 10 ? (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img src={m.Photo.startsWith('data:') ? m.Photo : `data:image/jpeg;base64,${m.Photo}`} alt={m.FullName} className="w-full h-full object-cover" />
+                    ) : (
+                      <User size={20} className="text-muted-foreground" />
+                    )}
+                  </div>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 flex-wrap">
                       <p className="font-semibold text-sm leading-tight">{m.FullName}</p>

@@ -8,6 +8,7 @@ export interface Member {
   Area: string;
   Status: MemberStatus;
   Remarks: string;
+  Photo?: string;
   CreatedAt: string;
 }
 
