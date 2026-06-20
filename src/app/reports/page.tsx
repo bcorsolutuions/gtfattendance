@@ -201,7 +201,7 @@ export default function ReportsPage() {
           <p className="text-muted-foreground text-sm mt-0.5">Attendance analytics and summaries</p>
         </div>
         {/* Export buttons */}
-        <div className="flex gap-2 flex-wrap no-print">
+        <div className="flex gap-2 flex-wrap print:hidden">
           <Button variant="outline" size="sm" className="gap-1.5" onClick={handlePrint}>
             <Printer size={15} /> Print
           </Button>
@@ -218,7 +218,7 @@ export default function ReportsPage() {
       </div>
 
       {/* Overall stats */}
-      <div className="grid grid-cols-3 gap-4 no-print">
+      <div className="grid grid-cols-3 gap-4 print:hidden">
         {[
           { label: 'Total Present', value: totalPresent, color: 'text-green-600', bg: 'bg-green-50 border-green-200' },
           { label: 'Total Absent', value: totalAbsent, color: 'text-red-600', bg: 'bg-red-50 border-red-200' },
@@ -232,7 +232,7 @@ export default function ReportsPage() {
       </div>
 
       {/* Filters */}
-      <Card className="no-print">
+      <Card className="print:hidden">
         <CardContent className="pt-4 pb-4">
           <div className="flex flex-wrap gap-3">
             <div className="flex flex-col gap-1">
@@ -288,7 +288,7 @@ export default function ReportsPage() {
       </Card>
 
       {/* Tab switcher */}
-      <div className="flex gap-2 no-print">
+      <div className="flex gap-2 print:hidden">
         {[{ key: 'grid', label: 'Attendance Grid' }, { key: 'meeting', label: 'Meeting-wise' }, { key: 'member', label: 'Member-wise' }].map(({ key, label }) => (
           <Button key={key} variant={tab === key ? 'default' : 'outline'} size="sm" onClick={() => setTab(key as Tab)}>{label}</Button>
         ))}

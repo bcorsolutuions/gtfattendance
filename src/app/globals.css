@@ -207,7 +207,7 @@
     print-color-adjust: exact !important;
   }
 
-  .no-print { display: none !important; }
+  .print\:hidden { display: none !important; }
 
   /* Page setup */
   @page { margin: 10mm; size: A4 landscape; }
